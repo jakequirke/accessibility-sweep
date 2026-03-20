@@ -1,0 +1,23 @@
+[project]
+name = "accessibility-sweep"
+version = "0.1.0"
+description = "CLI accessibility auditor — WCAG 2.2 AA + APCA + Claude AI enrichment"
+requires-python = ">=3.10"
+dependencies = [
+    "playwright",
+    "axe-playwright-python",
+    "anthropic",
+    "beautifulsoup4",
+    "httpx",
+    "jinja2",
+    "python-dotenv",
+    "rich",
+    "tenacity",
+]
+
+[project.scripts]
+accessibility-sweep = "cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"

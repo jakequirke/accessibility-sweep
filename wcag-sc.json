@@ -1,0 +1,1111 @@
+{
+  "version": "WCAG 2.2",
+  "published": "2024-12-12",
+  "source": "https://www.w3.org/TR/WCAG22/",
+  "principles": [
+    {
+      "id": "1",
+      "name": "Perceivable",
+      "description": "Information and user interface components must be presentable to users in ways they can perceive.",
+      "guidelines": [
+        {
+          "id": "1.1",
+          "name": "Text Alternatives",
+          "description": "Provide text alternatives for any non-text content so that it can be changed into other forms people need.",
+          "success_criteria": [
+            {
+              "id": "1.1.1",
+              "name": "Non-text Content",
+              "level": "A",
+              "description": "All non-text content that is presented to the user has a text alternative that serves the equivalent purpose.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html",
+              "automatable": true,
+              "axe_rule": "image-alt",
+              "new_in": "2.0",
+              "tags": ["images", "alt-text", "media"]
+            }
+          ]
+        },
+        {
+          "id": "1.2",
+          "name": "Time-based Media",
+          "description": "Provide alternatives for time-based media.",
+          "success_criteria": [
+            {
+              "id": "1.2.1",
+              "name": "Audio-only and Video-only (Prerecorded)",
+              "level": "A",
+              "description": "For prerecorded audio-only and video-only media, a text alternative or audio track is provided.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/audio-only-and-video-only-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "audio", "video"]
+            },
+            {
+              "id": "1.2.2",
+              "name": "Captions (Prerecorded)",
+              "level": "A",
+              "description": "Captions are provided for all prerecorded audio content in synchronized media.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "captions", "audio"]
+            },
+            {
+              "id": "1.2.3",
+              "name": "Audio Description or Media Alternative (Prerecorded)",
+              "level": "A",
+              "description": "An alternative or audio description is provided for prerecorded video content in synchronized media.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/audio-description-or-media-alternative-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "video", "audio-description"]
+            },
+            {
+              "id": "1.2.4",
+              "name": "Captions (Live)",
+              "level": "AA",
+              "description": "Captions are provided for all live audio content in synchronized media.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/captions-live.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "captions", "live"]
+            },
+            {
+              "id": "1.2.5",
+              "name": "Audio Description (Prerecorded)",
+              "level": "AA",
+              "description": "Audio description is provided for all prerecorded video content in synchronized media.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/audio-description-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "video", "audio-description"]
+            },
+            {
+              "id": "1.2.6",
+              "name": "Sign Language (Prerecorded)",
+              "level": "AAA",
+              "description": "Sign language interpretation is provided for all prerecorded audio content in synchronized media.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/sign-language-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "sign-language"]
+            },
+            {
+              "id": "1.2.7",
+              "name": "Extended Audio Description (Prerecorded)",
+              "level": "AAA",
+              "description": "Extended audio description is provided for all prerecorded video content in synchronized media where pauses are insufficient.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/extended-audio-description-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "video", "audio-description"]
+            },
+            {
+              "id": "1.2.8",
+              "name": "Media Alternative (Prerecorded)",
+              "level": "AAA",
+              "description": "An alternative for time-based media is provided for all prerecorded synchronized media and video-only media.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/media-alternative-prerecorded.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media"]
+            },
+            {
+              "id": "1.2.9",
+              "name": "Audio-only (Live)",
+              "level": "AAA",
+              "description": "An alternative is provided for live audio-only content.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/audio-only-live.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["media", "audio", "live"]
+            }
+          ]
+        },
+        {
+          "id": "1.3",
+          "name": "Adaptable",
+          "description": "Create content that can be presented in different ways without losing information or structure.",
+          "success_criteria": [
+            {
+              "id": "1.3.1",
+              "name": "Info and Relationships",
+              "level": "A",
+              "description": "Information, structure, and relationships conveyed through presentation can be programmatically determined or are available in text.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html",
+              "automatable": "partial",
+              "axe_rule": "aria-required-children",
+              "new_in": "2.0",
+              "tags": ["structure", "semantics", "aria"]
+            },
+            {
+              "id": "1.3.2",
+              "name": "Meaningful Sequence",
+              "level": "A",
+              "description": "When the sequence in which content is presented affects its meaning, a correct reading sequence can be programmatically determined.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["structure", "reading-order"]
+            },
+            {
+              "id": "1.3.3",
+              "name": "Sensory Characteristics",
+              "level": "A",
+              "description": "Instructions do not rely solely on sensory characteristics such as shape, color, size, visual location, orientation, or sound.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/sensory-characteristics.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["colour", "sensory"]
+            },
+            {
+              "id": "1.3.4",
+              "name": "Orientation",
+              "level": "AA",
+              "description": "Content does not restrict its view and operation to a single display orientation unless essential.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/orientation.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["mobile", "orientation"]
+            },
+            {
+              "id": "1.3.5",
+              "name": "Identify Input Purpose",
+              "level": "AA",
+              "description": "The purpose of each input field collecting information about the user can be programmatically determined.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose.html",
+              "automatable": true,
+              "axe_rule": "autocomplete-valid",
+              "new_in": "2.1",
+              "tags": ["forms", "autocomplete"]
+            },
+            {
+              "id": "1.3.6",
+              "name": "Identify Purpose",
+              "level": "AAA",
+              "description": "The purpose of user interface components, icons, and regions can be programmatically determined.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/identify-purpose.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["semantics", "aria", "landmarks"]
+            }
+          ]
+        },
+        {
+          "id": "1.4",
+          "name": "Distinguishable",
+          "description": "Make it easier for users to see and hear content including separating foreground from background.",
+          "success_criteria": [
+            {
+              "id": "1.4.1",
+              "name": "Use of Color",
+              "level": "A",
+              "description": "Color is not used as the only visual means of conveying information, indicating an action, prompting a response, or distinguishing a visual element.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["colour", "visual"]
+            },
+            {
+              "id": "1.4.2",
+              "name": "Audio Control",
+              "level": "A",
+              "description": "If audio plays automatically for more than 3 seconds, a mechanism is available to pause, stop, or control volume.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["audio", "media"]
+            },
+            {
+              "id": "1.4.3",
+              "name": "Contrast (Minimum)",
+              "level": "AA",
+              "description": "Text and images of text have a contrast ratio of at least 4.5:1 (3:1 for large text).",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+              "automatable": true,
+              "axe_rule": "color-contrast",
+              "new_in": "2.0",
+              "tags": ["colour", "contrast", "text"],
+              "apca_note": "APCA recommends Lc 75 for body text, Lc 60 for large or bold text as a more perceptually accurate alternative."
+            },
+            {
+              "id": "1.4.4",
+              "name": "Resize Text",
+              "level": "AA",
+              "description": "Text can be resized up to 200 percent without loss of content or functionality.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["text", "zoom", "responsive"]
+            },
+            {
+              "id": "1.4.5",
+              "name": "Images of Text",
+              "level": "AA",
+              "description": "Text is used to convey information rather than images of text except where essential.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["images", "text"]
+            },
+            {
+              "id": "1.4.6",
+              "name": "Contrast (Enhanced)",
+              "level": "AAA",
+              "description": "Text and images of text have a contrast ratio of at least 7:1 (4.5:1 for large text).",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-enhanced.html",
+              "automatable": true,
+              "axe_rule": "color-contrast-enhanced",
+              "new_in": "2.0",
+              "tags": ["colour", "contrast", "text"]
+            },
+            {
+              "id": "1.4.7",
+              "name": "Low or No Background Audio",
+              "level": "AAA",
+              "description": "Prerecorded audio-only content with primarily speech has no or low background sounds.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/low-or-no-background-audio.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["audio"]
+            },
+            {
+              "id": "1.4.8",
+              "name": "Visual Presentation",
+              "level": "AAA",
+              "description": "A mechanism is available for users to control the visual presentation of blocks of text.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["text", "visual"]
+            },
+            {
+              "id": "1.4.9",
+              "name": "Images of Text (No Exception)",
+              "level": "AAA",
+              "description": "Images of text are only used for pure decoration or where essential.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/images-of-text-no-exception.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["images", "text"]
+            },
+            {
+              "id": "1.4.10",
+              "name": "Reflow",
+              "level": "AA",
+              "description": "Content can be presented without loss of information or two-dimensional scrolling at 320 CSS pixels width.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/reflow.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["responsive", "zoom", "mobile"]
+            },
+            {
+              "id": "1.4.11",
+              "name": "Non-text Contrast",
+              "level": "AA",
+              "description": "User interface components and graphical objects have a contrast ratio of at least 3:1 against adjacent colours.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["colour", "contrast", "ui-components"]
+            },
+            {
+              "id": "1.4.12",
+              "name": "Text Spacing",
+              "level": "AA",
+              "description": "No loss of content or functionality occurs when overriding text spacing properties.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["text", "spacing", "css"]
+            },
+            {
+              "id": "1.4.13",
+              "name": "Content on Hover or Focus",
+              "level": "AA",
+              "description": "Additional content that appears on hover or focus is dismissible, hoverable, and persistent.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["hover", "focus", "tooltips"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Operable",
+      "description": "User interface components and navigation must be operable.",
+      "guidelines": [
+        {
+          "id": "2.1",
+          "name": "Keyboard Accessible",
+          "description": "Make all functionality available from a keyboard.",
+          "success_criteria": [
+            {
+              "id": "2.1.1",
+              "name": "Keyboard",
+              "level": "A",
+              "description": "All functionality is operable through a keyboard interface without requiring specific timings.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/keyboard.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["keyboard", "navigation"]
+            },
+            {
+              "id": "2.1.2",
+              "name": "No Keyboard Trap",
+              "level": "A",
+              "description": "Keyboard focus can be moved away from any component using only a keyboard interface.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["keyboard", "focus", "trap"]
+            },
+            {
+              "id": "2.1.3",
+              "name": "Keyboard (No Exception)",
+              "level": "AAA",
+              "description": "All functionality is operable through a keyboard interface without requiring specific timings for any keystroke.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/keyboard-no-exception.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["keyboard"]
+            },
+            {
+              "id": "2.1.4",
+              "name": "Character Key Shortcuts",
+              "level": "A",
+              "description": "Keyboard shortcuts using only character keys can be turned off, remapped, or only active on focus.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/character-key-shortcuts.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["keyboard", "shortcuts"]
+            }
+          ]
+        },
+        {
+          "id": "2.2",
+          "name": "Enough Time",
+          "description": "Provide users enough time to read and use content.",
+          "success_criteria": [
+            {
+              "id": "2.2.1",
+              "name": "Timing Adjustable",
+              "level": "A",
+              "description": "Time limits can be turned off, adjusted, or extended.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["timing", "sessions"]
+            },
+            {
+              "id": "2.2.2",
+              "name": "Pause, Stop, Hide",
+              "level": "A",
+              "description": "Moving, blinking, scrolling, or auto-updating content can be paused, stopped, or hidden.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["animation", "timing", "carousel"]
+            },
+            {
+              "id": "2.2.3",
+              "name": "No Timing",
+              "level": "AAA",
+              "description": "Timing is not an essential part of the event or activity.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/no-timing.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["timing"]
+            },
+            {
+              "id": "2.2.4",
+              "name": "Interruptions",
+              "level": "AAA",
+              "description": "Interruptions can be postponed or suppressed by the user.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/interruptions.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["timing", "notifications"]
+            },
+            {
+              "id": "2.2.5",
+              "name": "Re-authenticating",
+              "level": "AAA",
+              "description": "Data is preserved when an authenticated session expires.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/re-authenticating.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["sessions", "forms"]
+            },
+            {
+              "id": "2.2.6",
+              "name": "Timeouts",
+              "level": "AAA",
+              "description": "Users are warned of the duration of any inactivity that could cause data loss.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/timeouts.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["timing", "sessions"]
+            }
+          ]
+        },
+        {
+          "id": "2.3",
+          "name": "Seizures and Physical Reactions",
+          "description": "Do not design content in a way that is known to cause seizures or physical reactions.",
+          "success_criteria": [
+            {
+              "id": "2.3.1",
+              "name": "Three Flashes or Below Threshold",
+              "level": "A",
+              "description": "Content does not contain anything that flashes more than three times per second, or the flash is below general flash and red flash thresholds.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["flashing", "seizure"]
+            },
+            {
+              "id": "2.3.2",
+              "name": "Three Flashes",
+              "level": "AAA",
+              "description": "Content does not contain anything that flashes more than three times per second.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/three-flashes.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["flashing", "seizure"]
+            },
+            {
+              "id": "2.3.3",
+              "name": "Animation from Interactions",
+              "level": "AAA",
+              "description": "Motion animation triggered by interaction can be disabled unless essential.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["animation", "motion"]
+            }
+          ]
+        },
+        {
+          "id": "2.4",
+          "name": "Navigable",
+          "description": "Provide ways to help users navigate, find content, and determine where they are.",
+          "success_criteria": [
+            {
+              "id": "2.4.1",
+              "name": "Bypass Blocks",
+              "level": "A",
+              "description": "A mechanism is available to bypass blocks of content that are repeated on multiple web pages.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/bypass-blocks.html",
+              "automatable": true,
+              "axe_rule": "bypass",
+              "new_in": "2.0",
+              "tags": ["navigation", "skip-links", "keyboard"]
+            },
+            {
+              "id": "2.4.2",
+              "name": "Page Titled",
+              "level": "A",
+              "description": "Web pages have titles that describe topic or purpose.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/page-titled.html",
+              "automatable": true,
+              "axe_rule": "document-title",
+              "new_in": "2.0",
+              "tags": ["navigation", "title"]
+            },
+            {
+              "id": "2.4.3",
+              "name": "Focus Order",
+              "level": "A",
+              "description": "Focusable components receive focus in an order that preserves meaning and operability.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["focus", "keyboard", "navigation"]
+            },
+            {
+              "id": "2.4.4",
+              "name": "Link Purpose (In Context)",
+              "level": "A",
+              "description": "The purpose of each link can be determined from the link text alone or from its context.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html",
+              "automatable": "partial",
+              "axe_rule": "link-name",
+              "new_in": "2.0",
+              "tags": ["links", "navigation"]
+            },
+            {
+              "id": "2.4.5",
+              "name": "Multiple Ways",
+              "level": "AA",
+              "description": "More than one way is available to locate a web page within a set of web pages.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/multiple-ways.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["navigation", "site-map", "search"]
+            },
+            {
+              "id": "2.4.6",
+              "name": "Headings and Labels",
+              "level": "AA",
+              "description": "Headings and labels describe topic or purpose.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["headings", "forms", "labels"]
+            },
+            {
+              "id": "2.4.7",
+              "name": "Focus Visible",
+              "level": "AA",
+              "description": "Any keyboard operable user interface has a mode of operation where the keyboard focus indicator is visible.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["focus", "keyboard", "visual"]
+            },
+            {
+              "id": "2.4.8",
+              "name": "Location",
+              "level": "AAA",
+              "description": "Information about the user's location within a set of web pages is available.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/location.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["navigation", "breadcrumbs"]
+            },
+            {
+              "id": "2.4.9",
+              "name": "Link Purpose (Link Only)",
+              "level": "AAA",
+              "description": "The purpose of each link can be determined from the link text alone.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-link-only.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["links"]
+            },
+            {
+              "id": "2.4.10",
+              "name": "Section Headings",
+              "level": "AAA",
+              "description": "Section headings are used to organize the content.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/section-headings.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["headings", "structure"]
+            },
+            {
+              "id": "2.4.11",
+              "name": "Focus Not Obscured (Minimum)",
+              "level": "AA",
+              "description": "When a component receives keyboard focus, it is not entirely hidden due to author-created content.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["focus", "keyboard", "sticky-headers"]
+            },
+            {
+              "id": "2.4.12",
+              "name": "Focus Not Obscured (Enhanced)",
+              "level": "AAA",
+              "description": "When a component receives keyboard focus, no part of it is hidden due to author-created content.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-enhanced.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["focus", "keyboard", "sticky-headers"]
+            },
+            {
+              "id": "2.4.13",
+              "name": "Focus Appearance",
+              "level": "AAA",
+              "description": "The keyboard focus indicator has sufficient size and contrast to be clearly visible.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["focus", "keyboard", "contrast", "visual"]
+            }
+          ]
+        },
+        {
+          "id": "2.5",
+          "name": "Input Modalities",
+          "description": "Make it easier for users to operate functionality through various inputs beyond keyboard.",
+          "success_criteria": [
+            {
+              "id": "2.5.1",
+              "name": "Pointer Gestures",
+              "level": "A",
+              "description": "All functionality that uses multipoint or path-based gestures can be operated with a single pointer.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/pointer-gestures.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["mobile", "touch", "gestures"]
+            },
+            {
+              "id": "2.5.2",
+              "name": "Pointer Cancellation",
+              "level": "A",
+              "description": "For functionality operated with a single pointer, at least one of: no down-event, abort/undo, up-reversal, or essential.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["mobile", "touch", "pointer"]
+            },
+            {
+              "id": "2.5.3",
+              "name": "Label in Name",
+              "level": "A",
+              "description": "For user interface components with a visible text label, the accessible name contains the visible text.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html",
+              "automatable": "partial",
+              "axe_rule": "label-content-name-mismatch",
+              "new_in": "2.1",
+              "tags": ["labels", "aria", "forms"]
+            },
+            {
+              "id": "2.5.4",
+              "name": "Motion Actuation",
+              "level": "A",
+              "description": "Functionality triggered by device motion can be operated by user interface components and motion response can be disabled.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/motion-actuation.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["mobile", "motion", "gestures"]
+            },
+            {
+              "id": "2.5.5",
+              "name": "Target Size (Enhanced)",
+              "level": "AAA",
+              "description": "The size of the target for pointer inputs is at least 44x44 CSS pixels.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["mobile", "touch", "target-size"]
+            },
+            {
+              "id": "2.5.6",
+              "name": "Concurrent Input Mechanisms",
+              "level": "AAA",
+              "description": "Web content does not restrict use of input modalities available on a platform.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/concurrent-input-mechanisms.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["input", "mobile", "keyboard"]
+            },
+            {
+              "id": "2.5.7",
+              "name": "Dragging Movements",
+              "level": "AA",
+              "description": "All functionality that uses dragging movements can be achieved with a single pointer without dragging.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["mobile", "touch", "drag", "pointer"]
+            },
+            {
+              "id": "2.5.8",
+              "name": "Target Size (Minimum)",
+              "level": "AA",
+              "description": "The size of the target for pointer inputs is at least 24x24 CSS pixels.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["mobile", "touch", "target-size"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Understandable",
+      "description": "Information and the operation of the user interface must be understandable.",
+      "guidelines": [
+        {
+          "id": "3.1",
+          "name": "Readable",
+          "description": "Make text content readable and understandable.",
+          "success_criteria": [
+            {
+              "id": "3.1.1",
+              "name": "Language of Page",
+              "level": "A",
+              "description": "The default human language of each web page can be programmatically determined.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html",
+              "automatable": true,
+              "axe_rule": "html-has-lang",
+              "new_in": "2.0",
+              "tags": ["language", "html"]
+            },
+            {
+              "id": "3.1.2",
+              "name": "Language of Parts",
+              "level": "AA",
+              "description": "The human language of each passage or phrase in the content can be programmatically determined.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/language-of-parts.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["language", "html"]
+            },
+            {
+              "id": "3.1.3",
+              "name": "Unusual Words",
+              "level": "AAA",
+              "description": "A mechanism is available for identifying specific definitions of words used in an unusual or restricted way.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/unusual-words.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["language", "cognitive"]
+            },
+            {
+              "id": "3.1.4",
+              "name": "Abbreviations",
+              "level": "AAA",
+              "description": "A mechanism for identifying the expanded form or meaning of abbreviations is available.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/abbreviations.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["language", "cognitive"]
+            },
+            {
+              "id": "3.1.5",
+              "name": "Reading Level",
+              "level": "AAA",
+              "description": "When text requires reading ability more advanced than lower secondary education level, supplemental content is available.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/reading-level.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["language", "cognitive", "plain-language"]
+            },
+            {
+              "id": "3.1.6",
+              "name": "Pronunciation",
+              "level": "AAA",
+              "description": "A mechanism is available for identifying specific pronunciation of words where meaning is ambiguous without pronunciation.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/pronunciation.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["language"]
+            }
+          ]
+        },
+        {
+          "id": "3.2",
+          "name": "Predictable",
+          "description": "Make web pages appear and operate in predictable ways.",
+          "success_criteria": [
+            {
+              "id": "3.2.1",
+              "name": "On Focus",
+              "level": "A",
+              "description": "When any user interface component receives focus, it does not initiate a change of context.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["focus", "navigation", "predictable"]
+            },
+            {
+              "id": "3.2.2",
+              "name": "On Input",
+              "level": "A",
+              "description": "Changing the setting of any user interface component does not automatically cause a change of context.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/on-input.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["forms", "predictable"]
+            },
+            {
+              "id": "3.2.3",
+              "name": "Consistent Navigation",
+              "level": "AA",
+              "description": "Navigation mechanisms that are repeated on multiple web pages occur in the same relative order.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["navigation", "predictable"]
+            },
+            {
+              "id": "3.2.4",
+              "name": "Consistent Identification",
+              "level": "AA",
+              "description": "Components that have the same functionality within a set of web pages are identified consistently.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/consistent-identification.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["navigation", "predictable", "labels"]
+            },
+            {
+              "id": "3.2.5",
+              "name": "Change on Request",
+              "level": "AAA",
+              "description": "Changes of context are initiated only by user request or a mechanism is available to turn off such changes.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/change-on-request.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["navigation", "predictable"]
+            },
+            {
+              "id": "3.2.6",
+              "name": "Consistent Help",
+              "level": "A",
+              "description": "If a web page provides help mechanisms, they occur in the same relative order across pages.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/consistent-help.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["navigation", "predictable", "help"]
+            }
+          ]
+        },
+        {
+          "id": "3.3",
+          "name": "Input Assistance",
+          "description": "Help users avoid and correct mistakes.",
+          "success_criteria": [
+            {
+              "id": "3.3.1",
+              "name": "Error Identification",
+              "level": "A",
+              "description": "If an input error is automatically detected, the item in error is identified and the error is described to the user in text.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["forms", "errors"]
+            },
+            {
+              "id": "3.3.2",
+              "name": "Labels or Instructions",
+              "level": "A",
+              "description": "Labels or instructions are provided when content requires user input.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html",
+              "automatable": "partial",
+              "axe_rule": "label",
+              "new_in": "2.0",
+              "tags": ["forms", "labels"]
+            },
+            {
+              "id": "3.3.3",
+              "name": "Error Suggestion",
+              "level": "AA",
+              "description": "If an input error is detected and suggestions for correction are known, the suggestion is provided to the user.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-suggestion.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["forms", "errors"]
+            },
+            {
+              "id": "3.3.4",
+              "name": "Error Prevention (Legal, Financial, Data)",
+              "level": "AA",
+              "description": "For pages causing legal commitments or financial transactions, submissions are reversible, checked, or confirmed.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-legal-financial-data.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["forms", "errors", "transactions"]
+            },
+            {
+              "id": "3.3.5",
+              "name": "Help",
+              "level": "AAA",
+              "description": "Context-sensitive help is available.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/help.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["forms", "help", "cognitive"]
+            },
+            {
+              "id": "3.3.6",
+              "name": "Error Prevention (All)",
+              "level": "AAA",
+              "description": "For pages requiring user submissions, submissions are reversible, checked, or confirmed.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-all.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "tags": ["forms", "errors"]
+            },
+            {
+              "id": "3.3.7",
+              "name": "Redundant Entry",
+              "level": "A",
+              "description": "Information previously entered by the user is auto-populated or available for selection in the same process.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/redundant-entry.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["forms", "cognitive"]
+            },
+            {
+              "id": "3.3.8",
+              "name": "Accessible Authentication (Minimum)",
+              "level": "AA",
+              "description": "Authentication processes do not rely on cognitive function tests unless alternatives are provided.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["authentication", "cognitive", "forms"]
+            },
+            {
+              "id": "3.3.9",
+              "name": "Accessible Authentication (Enhanced)",
+              "level": "AAA",
+              "description": "Authentication processes do not rely on cognitive function tests.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-enhanced.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.2",
+              "tags": ["authentication", "cognitive", "forms"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Robust",
+      "description": "Content must be robust enough that it can be interpreted by a wide variety of user agents, including assistive technologies.",
+      "guidelines": [
+        {
+          "id": "4.1",
+          "name": "Compatible",
+          "description": "Maximise compatibility with current and future user agents, including assistive technologies.",
+          "success_criteria": [
+            {
+              "id": "4.1.1",
+              "name": "Parsing (Obsolete and removed)",
+              "level": "A",
+              "description": "Removed in WCAG 2.2. Previously required valid HTML parsing. Now considered obsolete as modern browsers handle parsing errors consistently.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/parsing.html",
+              "automatable": false,
+              "axe_rule": null,
+              "new_in": "2.0",
+              "removed_in": "2.2",
+              "tags": ["html", "parsing", "obsolete"]
+            },
+            {
+              "id": "4.1.2",
+              "name": "Name, Role, Value",
+              "level": "A",
+              "description": "For all user interface components, the name, role, and values can be programmatically determined and set.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html",
+              "automatable": "partial",
+              "axe_rule": "aria-required-attr",
+              "new_in": "2.0",
+              "tags": ["aria", "semantics", "screen-reader"]
+            },
+            {
+              "id": "4.1.3",
+              "name": "Status Messages",
+              "level": "AA",
+              "description": "Status messages can be programmatically determined through role or properties so they can be presented without receiving focus.",
+              "url": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html",
+              "automatable": "partial",
+              "axe_rule": null,
+              "new_in": "2.1",
+              "tags": ["aria", "live-regions", "notifications"]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "new_in_2_2": [
+      "2.4.11", "2.4.12", "2.4.13",
+      "2.5.7", "2.5.8",
+      "3.2.6",
+      "3.3.7", "3.3.8", "3.3.9"
+    ],
+    "removed_in_2_2": ["4.1.1"],
+    "aa_criteria": [
+      "1.2.4", "1.2.5", "1.3.4", "1.3.5",
+      "1.4.3", "1.4.4", "1.4.5", "1.4.10", "1.4.11", "1.4.12", "1.4.13",
+      "2.4.5", "2.4.6", "2.4.7", "2.4.11",
+      "2.5.7", "2.5.8",
+      "3.1.2", "3.2.3", "3.2.4",
+      "3.3.3", "3.3.4", "3.3.8",
+      "4.1.3"
+    ],
+    "automatable_criteria": [
+      "1.1.1", "1.3.5", "1.4.3", "1.4.6",
+      "2.4.1", "2.4.2", "2.4.4",
+      "3.1.1", "3.3.2"
+    ],
+    "apca_relevant_criteria": [
+      "1.4.3", "1.4.6", "1.4.11", "2.4.13"
+    ]
+  }
+}

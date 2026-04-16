@@ -40,6 +40,7 @@ def main():
     parser.add_argument("--depth", type=int, default=int(os.environ.get("DEFAULT_MAX_DEPTH", "5")), help="Max crawl depth")
     parser.add_argument("--delay", type=float, default=float(os.environ.get("DEFAULT_DELAY", "1.0")), help="Delay between pages (seconds)")
     parser.add_argument("--exclude", nargs="*", default=[], help="URL patterns to exclude")
+    parser.add_argument("--static-only", action="store_true", help="Run static analysis only (axe-core + custom checks, no AI, no tokens)")
     parser.add_argument("--claude", action="store_true", help="Enable Claude AI enrichment (requires ANTHROPIC_API_KEY)")
     parser.add_argument(
         "--agent",
@@ -53,7 +54,10 @@ def main():
     parser.add_argument("--format", choices=["all", "html", "json", "terminal"], default="all", help="Output format")
     args = parser.parse_args()
 
-    # Resolve agent personas
+    # Resolve agent personas (--static-only disables all AI)
+    if args.static_only:
+        args.claude = False
+        args.agent = None
     agent_personas = _resolve_personas(args)
 
     # Resolve URLs
@@ -75,7 +79,9 @@ def main():
         sys.exit(1)
 
     console.print(f"\n[bold]Scanning {len(urls)} page(s)...[/bold]")
-    if agent_personas:
+    if args.static_only:
+        console.print("[dim]Static analysis only (no AI tokens)[/dim]\n")
+    elif agent_personas:
         console.print(f"[bold cyan]Agent personas:[/bold cyan] {', '.join(agent_personas)}\n")
     else:
         console.print()
@@ -118,7 +124,12 @@ def main():
 
                 # Phase 3: AI agent personas
                 if agent_personas:
-                    agent_issues = _run_agent_personas(agent_personas, page, url)
+                    # Pass axe findings to personas so they know what's already flagged
+                    axe_summary = [
+                        {"type": iss.type, "element": iss.element, "description": iss.description[:100]}
+                        for iss in page_result.issues if iss.source == "axe"
+                    ]
+                    agent_issues = _run_agent_personas(agent_personas, page, url, axe_summary)
                     page_result.issues.extend(agent_issues)
 
                 # Phase 4: Claude AI enrichment (opt-in with --claude)
@@ -215,7 +226,12 @@ def _resolve_personas(args) -> list[str]:
     return personas
 
 
-def _run_agent_personas(personas: list[str], page, url: str) -> list:
+def _run_agent_personas(
+    personas: list[str],
+    page,
+    url: str,
+    axe_findings: list[dict] | None = None,
+) -> list:
     """Run per-page agent personas (keyboard, screen_reader, cognitive)."""
     all_issues = []
 
@@ -233,7 +249,7 @@ def _run_agent_personas(personas: list[str], page, url: str) -> list:
             else:
                 continue
 
-            issues = run(page, url)
+            issues = run(page, url, axe_findings=axe_findings)
             all_issues.extend(issues)
         except Exception as e:
             console.print(f"    [yellow]{persona_name} agent failed: {e}[/yellow]")

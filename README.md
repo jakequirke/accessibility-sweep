@@ -8,6 +8,10 @@
 
 ## 1. Architecture Overview
 
+The tool operates in two modes that run sequentially:
+
+### Mode 1 — Static Analysis Pipeline (fast, deterministic, no AI tokens)
+
 ```
 CLI Entry Point
     │
@@ -18,25 +22,47 @@ CLI Entry Point
     ├── Axe-core Scanner (per page)
     │     └── WCAG 2.2 AA automated checks
     │
-    ├── Custom Checks (per page)
-    │     ├── Colour contrast (enhanced)
-    │     ├── Heading structure
-    │     ├── Landmark regions
-    │     ├── Focus visibility (keyboard simulation)
-    │     └── ARIA context analysis
-    │
-    ├── Claude API Enrichment (per page)
-    │     ├── Alt text quality evaluation
-    │     ├── Plain language / cognitive accessibility
-    │     ├── ARIA usage in context (not just validity)
-    │     ├── Remediation recommendations
-    │     └── Severity re-evaluation where needed
+    └── Custom Checks (per page)
+          ├── APCA colour contrast (enhanced)
+          ├── Heading structure
+          ├── Landmark regions
+          ├── Focus visibility (keyboard simulation)
+          └── ARIA context analysis
+```
+
+This produces a baseline of automated findings. It runs first, always, and costs zero tokens.
+
+### Mode 2 — Agent Personas (behavioural, AI-driven, per-persona)
+
+```
+Static findings + Page → Agent Loop (Claude API tool use) → Persona findings
+```
+
+Each persona is an independent agent run. Claude receives a system prompt defining the persona, a restricted set of Playwright-backed tools, and the page URL. It decides what to test, calls tools, reasons about results, and logs its own findings.
+
+There are three per-page personas and one cross-page persona:
+
+| Persona | Perspective | Key tools | What it catches |
+|---|---|---|---|
+| **Keyboard** | Keyboard-only user (no mouse) | `press_key`, `get_focus_state`, `get_focusable_elements` | Keyboard traps, missing skip links, invisible focus, illogical tab order, inaccessible widgets |
+| **Screen Reader** | Non-visual user (accessibility tree only) | `get_accessibility_tree`, `get_page_text`, `get_element_details`, `get_live_regions` | Missing accessible names, incorrect roles, poor heading structure, broken live regions, label-in-name mismatches |
+| **Cognitive** | User with cognitive disabilities | `take_screenshot`, `get_page_metrics`, `get_page_text`, `get_form_fields` | Complex language, high reading level, unclear error messages, visual clutter, missing autocomplete |
+| **Journey** | Multi-page flow tester | `navigate_to`, `click_element`, `get_links` + keyboard/screen reader tools | Inconsistent navigation, non-unique page titles, broken cross-page keyboard flows |
+
+### Combined output
+
+```
+Static findings + Persona findings → Unified report
     │
     └── Report Generator
           ├── HTML report (grouped by page + severity)
           ├── JSON output (structured, for future integration)
           └── Plain text terminal summary
 ```
+
+### Optional: Claude API Enrichment
+
+A lighter-weight AI mode (`--claude`) that sends page HTML + axe results to Claude for contextual analysis (alt text quality, ARIA context, plain language, remediation suggestions) without the full agent loop.
 
 ---
 
@@ -54,7 +80,7 @@ CLI Entry Point
 | `rich` | Terminal output formatting | Makes plain text summary readable and professional |
 | `tenacity` | Retry logic for API rate limits | Handles both Claude and crawling rate limits cleanly |
 
-**Contrast checker:** The enhanced contrast algorithm is ported from the reference JS implementation — covered in Section 6.
+**Contrast checker:** The enhanced contrast algorithm is ported from the reference JS implementation — covered in Section 5.
 
 ---
 
@@ -77,29 +103,47 @@ accessibility-sweep/
 │   ├── crawler/
 │   │   ├── __init__.py
 │   │   ├── auto.py             # Auto-crawl from seed URL
-│   │   └── manual.py          # Accept list of URLs
+│   │   └── manual.py           # Accept list of URLs
 │   │
 │   ├── scanner/
 │   │   ├── __init__.py
-│   │   ├── axe.py             # axe-core runner via Playwright
-│   │   ├── apca.py            # APCA contrast implementation
-│   │   ├── structure.py       # Headings, landmarks, forms
-│   │   └── keyboard.py        # Focus/keyboard simulation checks
+│   │   ├── axe.py              # axe-core runner via Playwright
+│   │   ├── apca.py             # APCA contrast implementation
+│   │   ├── structure.py        # Headings, landmarks, forms
+│   │   ├── keyboard.py         # Focus/keyboard simulation checks
+│   │   └── element_context.py  # Enrich issues with DOM location context
+│   │
+│   ├── agent/                   # AI agent personas (Mode 2)
+│   │   ├── __init__.py
+│   │   ├── core.py             # Agent loop — Claude API tool-use loop
+│   │   ├── tools.py            # Tool definitions + execution dispatch
+│   │   └── personas/
+│   │       ├── __init__.py
+│   │       ├── keyboard.py     # Keyboard-only navigation persona
+│   │       ├── screen_reader.py # Screen reader / accessibility tree persona
+│   │       ├── cognitive.py    # Cognitive load / plain language persona
+│   │       └── journey.py      # Multi-page journey persona
 │   │
 │   ├── ai/
 │   │   ├── __init__.py
-│   │   ├── enrichment.py      # Claude API calls per page
-│   │   └── prompts.py         # All system/user prompt templates
+│   │   ├── enrichment.py       # Claude API calls per page (lighter mode)
+│   │   └── prompts.py          # All system/user prompt templates
 │   │
 │   ├── reporter/
 │   │   ├── __init__.py
-│   │   ├── html.py            # HTML report generator
-│   │   ├── json_out.py        # JSON output
-│   │   ├── terminal.py        # Plain text terminal summary
+│   │   ├── html.py             # HTML report generator
+│   │   ├── json_out.py         # JSON output
+│   │   ├── terminal.py         # Plain text terminal summary
 │   │   └── templates/
-│   │       └── report.html    # Jinja2 HTML template
+│   │       └── report.html     # Jinja2 HTML template
 │   │
-│   └── models.py              # Dataclasses: Issue, PageResult, Report
+│   ├── models.py               # Dataclasses: Issue, PageResult, Report
+│   ├── analyzer.py             # Site-wide issue deduplication
+│   └── wcag_lookup.py          # WCAG 2.2 criterion metadata enrichment
+│
+├── reference/
+│   ├── aria_patterns.json       # Expected keyboard behaviour per ARIA widget role
+│   └── screen_reader_mappings.json # What screen readers announce for common HTML/ARIA
 │
 └── outputs/                   # Generated reports land here
 ```
@@ -180,6 +224,21 @@ accessibility-sweep/
 - `--depth` flag to limit crawl depth
 - `--delay` flag for rate limiting on large sites
 - Basic config file support (`accessibility-sweep.config.json`)
+
+---
+
+### Phase 7 — Agent Personas (Behavioural Testing)
+*Goal: AI-driven testing that experiences the page the way real users do*
+
+- Agent loop (`agent/core.py`) — Claude API tool-use loop that drives Playwright via structured tool calls
+- Per-persona tool sets — each persona can only use tools that match its perspective (keyboard persona cannot click, screen reader persona cannot see screenshots)
+- Three per-page personas: keyboard navigation, screen reader, cognitive load
+- One cross-page persona: multi-page journey tester
+- Each persona receives existing axe-core findings to avoid duplication
+- Reference data files feed ARIA keyboard patterns and screen reader announcement mappings into context
+- Findings parsed from Claude's structured JSON output into the unified `Issue` model
+
+**Done when:** `python cli.py --url https://example.com --agent all` runs all four personas and merges findings into the report.
 
 ---
 
@@ -507,26 +566,174 @@ OUTPUT_DIR=outputs/
 
 ---
 
-## 6. What Claude Catches That axe-core Cannot
+## 6. Agent Personas
 
-| Issue Type | axe-core | Claude |
-|---|---|---|
-| Missing alt text | ✅ | — |
-| Alt text present but wrong | ❌ | ✅ |
-| Invalid ARIA attribute | ✅ | — |
-| ARIA correct but contextually misleading | ❌ | ✅ |
-| Colour contrast (WCAG ratio) | ✅ | — |
-| Enhanced contrast | ❌ | via custom check |
-| Plain language / reading level | ❌ | ✅ |
-| Cognitive accessibility | ❌ | ✅ |
-| Heading order violations | ✅ | — |
-| Headings logically confusing | ❌ | ✅ |
-| Specific remediation advice | ❌ | ✅ |
-| WCAG 2.2 SC 2.4.11 (Focus Not Obscured) | Partial | ✅ |
+The agent system lives in `accessibility_sweep/agent/` and implements Claude API tool use. Each persona is an independent agent run where Claude receives a system prompt, a restricted set of Playwright-backed tools, and the page context. It decides what to test, calls tools, reasons about the results, and reports findings as structured JSON.
+
+### How the Agent Loop Works (`agent/core.py`)
+
+1. Build structured context for the persona (page URL, axe findings, reference data)
+2. Send persona system prompt + context + tool definitions to Claude (`claude-sonnet-4-20250514`)
+3. Claude responds with `tool_use` blocks — execute each against the live Playwright page
+4. Feed tool results back to Claude
+5. Repeat until Claude produces a final JSON assessment (`stop_reason=end_turn`) or the turn limit is reached
+6. Parse the JSON assessment into `Issue` objects
+
+The loop has a safety cap of **40 tool-call round-trips** by default (60 for the journey persona). If the limit is reached, Claude is asked to provide its final assessment immediately.
+
+API calls use `tenacity` for retry logic (3 attempts with exponential backoff). Screenshot tool results are passed as base64 image content blocks. Large tool results are truncated at 12,000 characters.
+
+### Keyboard Navigation Persona
+
+**File:** `agent/personas/keyboard.py`
+
+**Identity:** A keyboard-only user who cannot use a mouse. Navigates exclusively with Tab, Shift+Tab, Enter, Space, Arrow keys, and Escape.
+
+**Tools:** `press_key`, `get_focus_state`, `get_focusable_elements`, `get_accessibility_tree`, `get_headings`
+
+**Excluded tools:** `click_element`, `take_screenshot` — this persona cannot click and cannot see.
+
+**Testing procedure:**
+1. Check for a skip-to-content link (Tab from top of page, activate with Enter)
+2. Tab through every interactive element — check focus visibility, accessible name, role, and whether focus is obscured by sticky elements
+3. Test ARIA widget keyboard patterns (modals, dropdowns, tab panels, accordions) against the ARIA Authoring Practices Guide
+4. Compare recorded focus order against DOM order from `get_focusable_elements`
+5. Test reverse tab order (Shift+Tab)
+
+**WCAG criteria evaluated:** 2.1.1 Keyboard, 2.1.2 No Keyboard Trap, 2.4.1 Bypass Blocks, 2.4.3 Focus Order, 2.4.7 Focus Visible, 2.4.11 Focus Not Obscured (Minimum), 2.4.12 Focus Not Obscured (Enhanced), 3.2.1 On Focus
+
+**Context provided:** DOM-order list of interactive elements, accessibility tree, axe findings, ARIA keyboard patterns from `reference/aria_patterns.json`
+
+### Screen Reader Persona
+
+**File:** `agent/personas/screen_reader.py`
+
+**Identity:** A screen reader user who perceives the page through its accessibility tree — roles, names, states, and reading order. Cannot see the visual layout.
+
+**Tools:** `get_accessibility_tree`, `get_page_text`, `get_element_details`, `get_live_regions`, `get_headings`, `get_landmarks`, `get_form_fields`, `press_key`
+
+**Excluded tools:** `take_screenshot`, `click_element` — this persona cannot see and does not use a mouse.
+
+**Testing procedure:**
+1. Review page title for descriptiveness
+2. Walk the accessibility tree — check every element has a meaningful name, correct role, and appropriate states
+3. Evaluate heading hierarchy (single h1, logical flow, no skipped levels)
+4. Check landmarks (main, navigation, labelled when duplicated)
+5. Check live regions for dynamic content announcements
+6. Verify form fields have programmatic labels and descriptions
+7. Drill into suspicious elements for ARIA misuse
+8. Test dynamic content (expand accordions, open dropdowns, re-check tree)
+
+**WCAG criteria evaluated:** 1.1.1 Non-text Content, 1.3.1 Info and Relationships, 1.3.2 Meaningful Sequence, 2.4.2 Page Titled, 2.4.4 Link Purpose, 2.4.6 Headings and Labels, 2.5.3 Label in Name, 3.3.2 Labels or Instructions, 4.1.2 Name Role Value, 4.1.3 Status Messages
+
+**Context provided:** Accessibility tree, heading hierarchy, landmark regions, form fields, axe findings, screen reader announcement reference from `reference/screen_reader_mappings.json`
+
+### Cognitive Load Persona
+
+**File:** `agent/personas/cognitive.py`
+
+**Identity:** A user with cognitive disabilities who needs clear language, predictable interactions, simple layouts, and helpful error recovery.
+
+**Tools:** `take_screenshot`, `get_page_metrics`, `get_page_text`, `get_form_fields`, `get_headings`, `get_error_messages`
+
+**Excluded tools:** `press_key` (focuses on content/design, not input method), `get_accessibility_tree` (evaluates what is perceived visually)
+
+**Testing procedure:**
+1. Take a screenshot — evaluate visual hierarchy, clutter, spacing, grouping
+2. Get page metrics — check Flesch-Kincaid grade level, sentence length, link density, call-to-action count, abbreviations, autoplay content
+3. Read page text — identify jargon, idioms, complex vocabulary, unexpanded abbreviations
+4. Check heading structure for scannability
+5. If forms are present — check labels, required field marking, instructions, autocomplete attributes, error message clarity
+
+**WCAG criteria evaluated:** 1.3.5 Identify Input Purpose, 2.2.1 Timing Adjustable, 2.4.2 Page Titled, 2.4.6 Headings and Labels, 3.1.3 Unusual Words, 3.1.4 Abbreviations, 3.1.5 Reading Level, 3.2.3 Consistent Navigation, 3.2.4 Consistent Identification, 3.2.6 Consistent Help, 3.3.1 Error Identification, 3.3.2 Labels or Instructions, 3.3.3 Error Suggestion, 3.3.4 Error Prevention, 3.3.7 Redundant Entry, 3.3.8 Accessible Authentication (Minimum), 3.3.9 Accessible Authentication (Enhanced)
+
+**Context provided:** Page metrics, page text, form fields, headings, error messages, axe findings, screenshot
+
+### Multi-Page Journey Persona
+
+**File:** `agent/personas/journey.py`
+
+**Identity:** A cross-page flow tester that navigates between pages to evaluate consistency and end-to-end accessibility.
+
+**Tools:** All keyboard and screen reader tools plus `navigate_to`, `click_element`, `get_links`, `get_page_url`
+
+**Testing procedure:**
+1. Map the site structure by getting all links on the starting page
+2. Follow 3-5 representative user journeys
+3. At each page, check navigation consistency, unique page titles, skip link presence, and keyboard accessibility
+4. Compare landmark and heading patterns across pages
+5. Verify a user can complete key tasks across multiple pages using only keyboard and screen reader
+
+**WCAG criteria evaluated:** 2.4.1 Bypass Blocks, 2.4.2 Page Titled, 2.4.5 Multiple Ways, 2.4.8 Location, 3.2.3 Consistent Navigation, 3.2.4 Consistent Identification, 3.3.7 Redundant Entry
+
+**Run conditions:** The journey persona runs after all individual page scans and only when more than one URL is being scanned. It gets 60 tool-call rounds (vs 40 default) to account for multi-page navigation.
+
+### Tool Definitions (`agent/tools.py`)
+
+Each tool is a Playwright wrapper defined as an Anthropic tool-use JSON schema. Tools are grouped by persona:
+
+| Tool | Keyboard | Screen Reader | Cognitive | Journey |
+|---|---|---|---|---|
+| `press_key` | Yes | Yes | - | Yes |
+| `get_focus_state` | Yes | - | - | - |
+| `get_focusable_elements` | Yes | - | - | - |
+| `get_accessibility_tree` | Yes | Yes | - | Yes |
+| `get_page_text` | - | Yes | Yes | Yes |
+| `get_element_details` | - | Yes | - | - |
+| `get_live_regions` | - | Yes | - | - |
+| `get_landmarks` | - | Yes | - | - |
+| `get_form_fields` | - | Yes | Yes | - |
+| `get_headings` | Yes | Yes | Yes | Yes |
+| `take_screenshot` | - | - | Yes | - |
+| `get_page_metrics` | - | - | Yes | - |
+| `get_error_messages` | - | - | Yes | - |
+| `navigate_to` | - | - | - | Yes |
+| `click_element` | - | - | - | Yes |
+| `get_links` | - | - | - | Yes |
+| `get_page_url` | - | - | - | Yes |
+
+### Reference Data
+
+- **`reference/aria_patterns.json`** — Maps ARIA widget roles (dialog, menu, tablist, combobox, accordion, carousel) to their expected keyboard interaction patterns. Used by the keyboard persona to know which keys to test for each widget.
+- **`reference/screen_reader_mappings.json`** — Maps common HTML/ARIA combinations to what screen readers would announce (e.g. `<button>Submit</button>` → "Submit, button"). Used by the screen reader persona to judge whether elements are announced correctly.
 
 ---
 
-## 7. Installation & First Run
+## 7. What Agents and Static Analysis Each Catch
+
+| Issue Type | axe-core / Custom | Agent Persona |
+|---|---|---|
+| Missing alt text | ✅ axe-core | — |
+| Alt text present but wrong quality | ❌ | ✅ Screen Reader |
+| Invalid ARIA attribute | ✅ axe-core | — |
+| ARIA correct but contextually misleading | ❌ | ✅ Screen Reader |
+| Colour contrast (WCAG 2.x ratio) | ✅ axe-core | — |
+| APCA enhanced contrast | ✅ custom check | — |
+| Keyboard trap | Partial | ✅ Keyboard |
+| Missing skip-to-content link | ❌ | ✅ Keyboard |
+| Focus indicator not visible | Partial | ✅ Keyboard |
+| Focus obscured by sticky element | ❌ | ✅ Keyboard |
+| Illogical tab order | ❌ | ✅ Keyboard |
+| Widget keyboard patterns (ARIA APG) | ❌ | ✅ Keyboard |
+| Missing accessible names | ✅ axe-core | ✅ Screen Reader (quality) |
+| Landmark structure issues | ✅ custom check | ✅ Screen Reader (context) |
+| Live region / status announcements | ❌ | ✅ Screen Reader |
+| Label in name mismatch | ❌ | ✅ Screen Reader |
+| Heading order violations | ✅ custom check | — |
+| Headings logically confusing | ❌ | ✅ Screen Reader |
+| Plain language / reading level | ❌ | ✅ Cognitive |
+| Visual clutter / cognitive overload | ❌ | ✅ Cognitive |
+| Unclear error messages | ❌ | ✅ Cognitive |
+| Missing autocomplete attributes | ❌ | ✅ Cognitive |
+| Abbreviations unexplained | ❌ | ✅ Cognitive |
+| Inconsistent navigation across pages | ❌ | ✅ Journey |
+| Non-unique page titles | ❌ | ✅ Journey |
+| Cross-page keyboard flow broken | ❌ | ✅ Journey |
+| Specific remediation advice with code | ❌ | ✅ All personas |
+
+---
+
+## 8. Installation & First Run
 
 ```bash
 # Clone / create project
@@ -543,18 +750,47 @@ playwright install chromium
 cp .env.example .env
 # Add your ANTHROPIC_API_KEY to .env
 
+# Static analysis only — no AI, no tokens
+python3 cli.py --url https://example.com --static-only
+
 # Run against a single page (Phase 1)
 python3 cli.py --url https://example.com --depth 0
 
-# Run full site crawl (Phase 3+)
+# Run full site crawl
 python3 cli.py --url https://client-site.com --depth 3 --delay 1.5
 
 # Manual URL list
 python3 cli.py --urls https://site.com/page-1 https://site.com/page-2
+
+# Run with agent personas (requires ANTHROPIC_API_KEY)
+python3 cli.py --url https://example.com --agent keyboard
+python3 cli.py --url https://example.com --agent screen_reader
+python3 cli.py --url https://example.com --agent cognitive
+python3 cli.py --url https://example.com --agent keyboard screen_reader cognitive
+python3 cli.py --url https://example.com --agent all  # all four personas including journey
+
+# Agent personas with multi-page crawl (journey persona runs cross-page analysis)
+python3 cli.py --url https://example.com --depth 3 --agent all
+
+# Lighter AI enrichment without the full agent loop
+python3 cli.py --url https://example.com --claude
+
+# Exclude patterns and choose output format
+python3 cli.py --url https://example.com --agent all --exclude "/admin/*" --format html
 ```
 
 ---
 
-## 8. Extensibility
+## 9. Extensibility
 
-The tool is structured so each check type lives in its own module under `scanner/` and can be added without touching the rest of the pipeline. The Claude enrichment layer addresses cognitive accessibility and plain language concerns beyond what automated tooling can catch.
+**Static checks:** Each check type lives in its own module under `scanner/` and can be added without touching the rest of the pipeline.
+
+**Agent personas:** New personas can be added by creating a module in `agent/personas/` with a `SYSTEM_PROMPT`, a tool set from the available tools in `agent/tools.py`, and a `run()` function that calls `agent.core.run_persona()`. New Playwright-backed tools can be added to `agent/tools.py` by defining the JSON schema and implementing the execution function.
+
+**Token budget:** Static analysis costs zero tokens and always runs. Each persona run costs roughly 5,000-15,000 input tokens and 2,000-5,000 output tokens per page, depending on complexity and step count. The `--static-only` flag skips all AI for quick sweeps.
+
+## 10. What This Is Not
+
+This tool is an aid, not a replacement for manual accessibility testing. It catches a significant portion of issues automatically and uses AI to evaluate things that rules cannot, but it cannot fully replicate the experience of a real screen reader user, a real keyboard user, or a real person with cognitive disabilities.
+
+Every report includes a note: "This automated and AI-assisted audit covers approximately 60-70% of WCAG 2.2 AA criteria. A manual audit by a qualified accessibility specialist is recommended to verify findings and catch issues that require human judgement."

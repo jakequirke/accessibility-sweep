@@ -1,0 +1,159 @@
+{
+  "patterns": [
+    {
+      "html": "<button>Submit</button>",
+      "announces_as": "Submit, button",
+      "notes": "Native button with text content."
+    },
+    {
+      "html": "<button aria-label='Close dialog'>X</button>",
+      "announces_as": "Close dialog, button",
+      "notes": "aria-label overrides visible text for screen readers."
+    },
+    {
+      "html": "<button aria-expanded='false'>Menu</button>",
+      "announces_as": "Menu, button, collapsed",
+      "notes": "aria-expanded=false announced as collapsed."
+    },
+    {
+      "html": "<button aria-expanded='true'>Menu</button>",
+      "announces_as": "Menu, button, expanded",
+      "notes": "aria-expanded=true announced as expanded."
+    },
+    {
+      "html": "<button aria-pressed='true'>Bold</button>",
+      "announces_as": "Bold, toggle button, pressed",
+      "notes": "aria-pressed creates a toggle button announcement."
+    },
+    {
+      "html": "<a href='/about'>About us</a>",
+      "announces_as": "About us, link",
+      "notes": "Standard link. Name comes from text content."
+    },
+    {
+      "html": "<a href='/about'><img src='icon.png' alt='About us'></a>",
+      "announces_as": "About us, link",
+      "notes": "Link name comes from child image alt text."
+    },
+    {
+      "html": "<a href='doc.pdf'>Annual Report (PDF, 2.4MB)</a>",
+      "announces_as": "Annual Report (PDF, 2.4MB), link",
+      "notes": "Good practice: file type and size in link text."
+    },
+    {
+      "html": "<input type='text' id='email' aria-label='Email address'>",
+      "announces_as": "Email address, edit text",
+      "notes": "aria-label overrides any visual label for screen readers."
+    },
+    {
+      "html": "<input type='text' id='name'> with <label for='name'>Full name</label>",
+      "announces_as": "Full name, edit text",
+      "notes": "Label associated via for/id pairing."
+    },
+    {
+      "html": "<input type='text' required aria-label='Email'>",
+      "announces_as": "Email, edit text, required",
+      "notes": "Required state announced after role."
+    },
+    {
+      "html": "<input type='text' aria-invalid='true' aria-label='Email'>",
+      "announces_as": "Email, edit text, invalid",
+      "notes": "Invalid state announced — screen readers alert user to errors."
+    },
+    {
+      "html": "<input type='checkbox' checked aria-label='Agree to terms'>",
+      "announces_as": "Agree to terms, checkbox, checked",
+      "notes": "Checked state announced after role."
+    },
+    {
+      "html": "<input type='checkbox' aria-label='Agree to terms'>",
+      "announces_as": "Agree to terms, checkbox, not checked",
+      "notes": "Unchecked state explicitly announced."
+    },
+    {
+      "html": "<select aria-label='Country'><option>United Kingdom</option>...</select>",
+      "announces_as": "Country, combo box, United Kingdom",
+      "notes": "Current value announced with the combo box."
+    },
+    {
+      "html": "<div role='alert'>Your form has errors.</div>",
+      "announces_as": "alert, Your form has errors.",
+      "notes": "Announced immediately when content appears. No focus change."
+    },
+    {
+      "html": "<div role='status'>3 results found</div>",
+      "announces_as": "3 results found",
+      "notes": "Polite announcement — read after current speech completes."
+    },
+    {
+      "html": "<nav aria-label='Main'>...</nav>",
+      "announces_as": "Main, navigation",
+      "notes": "Landmark with label. Screen readers announce on entry."
+    },
+    {
+      "html": "<nav aria-label='Breadcrumb'>...</nav>",
+      "announces_as": "Breadcrumb, navigation",
+      "notes": "Multiple nav landmarks must have unique labels."
+    },
+    {
+      "html": "<main>...</main>",
+      "announces_as": "main",
+      "notes": "Main landmark. Screen readers can jump directly to it."
+    },
+    {
+      "html": "<img src='photo.jpg' alt='Team members celebrating the product launch'>",
+      "announces_as": "Team members celebrating the product launch, image",
+      "notes": "Good alt text — describes the content and context of the image."
+    },
+    {
+      "html": "<img src='photo.jpg' alt=''>",
+      "announces_as": "(nothing — image is decorative)",
+      "notes": "Empty alt means screen readers skip the image entirely."
+    },
+    {
+      "html": "<img src='photo.jpg'>",
+      "announces_as": "photo.jpg, image",
+      "notes": "Missing alt — screen reader reads filename. Always a failure."
+    },
+    {
+      "html": "<img src='photo.jpg' alt='image'>",
+      "announces_as": "image, image",
+      "notes": "Redundant alt text — 'image' adds no information. Describe the content instead."
+    },
+    {
+      "html": "<svg role='img' aria-label='Company logo'>...</svg>",
+      "announces_as": "Company logo, image",
+      "notes": "SVG needs role='img' and aria-label to be announced."
+    },
+    {
+      "html": "<h1>Welcome to Example</h1>",
+      "announces_as": "Welcome to Example, heading, level 1",
+      "notes": "Heading level is announced. Users navigate by heading level."
+    },
+    {
+      "html": "<div role='tab' aria-selected='true'>Settings</div>",
+      "announces_as": "Settings, tab, selected, 3 of 5",
+      "notes": "Tab role announces selection state and position in set."
+    },
+    {
+      "html": "<div role='tabpanel' aria-labelledby='tab-settings'>...</div>",
+      "announces_as": "Settings, tab panel",
+      "notes": "Tab panel labelled by its associated tab."
+    },
+    {
+      "html": "<fieldset><legend>Shipping address</legend>...</fieldset>",
+      "announces_as": "Shipping address, group",
+      "notes": "Fieldset/legend groups form fields with a group label."
+    },
+    {
+      "html": "<table><caption>Quarterly results</caption>...</table>",
+      "announces_as": "Quarterly results, table, 4 columns, 12 rows",
+      "notes": "Table caption and dimensions announced on entry."
+    },
+    {
+      "html": "<a href='#' aria-current='page'>Home</a>",
+      "announces_as": "Home, current page, link",
+      "notes": "aria-current indicates the current item in a set (navigation)."
+    }
+  ]
+}

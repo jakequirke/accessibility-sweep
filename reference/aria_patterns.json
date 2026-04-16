@@ -1,0 +1,208 @@
+{
+  "dialog": {
+    "description": "Modal dialog",
+    "expected_keyboard": {
+      "Tab": "Moves focus between focusable elements inside the dialog",
+      "Shift+Tab": "Moves focus backwards inside the dialog",
+      "Escape": "Closes the dialog, returns focus to the trigger element"
+    },
+    "focus_rules": [
+      "On open: focus moves to the first focusable element inside the dialog",
+      "Focus must be trapped inside the dialog while open",
+      "On close: focus returns to the element that triggered the dialog"
+    ]
+  },
+  "alertdialog": {
+    "description": "Alert dialog requiring acknowledgement",
+    "expected_keyboard": {
+      "Tab": "Moves focus between focusable elements inside the dialog",
+      "Shift+Tab": "Moves focus backwards inside the dialog",
+      "Escape": "Closes the dialog if cancellation is allowed"
+    },
+    "focus_rules": [
+      "On open: focus moves to the first focusable element (often a confirm button)",
+      "Focus must be trapped inside the dialog while open",
+      "On close: focus returns to the element that triggered the dialog"
+    ]
+  },
+  "menu": {
+    "description": "Navigation or action menu",
+    "expected_keyboard": {
+      "ArrowDown": "Move to next menu item",
+      "ArrowUp": "Move to previous menu item",
+      "Enter": "Activate the focused menu item",
+      "Space": "Activate the focused menu item",
+      "Escape": "Close the menu, return focus to trigger",
+      "Home": "Move to first menu item",
+      "End": "Move to last menu item"
+    },
+    "focus_rules": [
+      "On open: focus moves to the first menu item",
+      "Arrow keys cycle through items without wrapping by default",
+      "Type-ahead: typing a letter moves focus to the next item starting with that letter"
+    ]
+  },
+  "menubar": {
+    "description": "Horizontal menu bar (typically site navigation)",
+    "expected_keyboard": {
+      "ArrowRight": "Move to next top-level menu item",
+      "ArrowLeft": "Move to previous top-level menu item",
+      "ArrowDown": "Open submenu and move to first item",
+      "ArrowUp": "Open submenu and move to last item",
+      "Enter": "Activate item or open submenu",
+      "Escape": "Close submenu, return focus to parent menubar item",
+      "Home": "Move to first item in menubar",
+      "End": "Move to last item in menubar"
+    },
+    "focus_rules": [
+      "Only one item in the menubar is in the tab order",
+      "Arrow keys move between items",
+      "Submenus open on Enter or ArrowDown"
+    ]
+  },
+  "tablist": {
+    "description": "Tab panel widget",
+    "expected_keyboard": {
+      "ArrowRight": "Move to next tab (horizontal tablist)",
+      "ArrowLeft": "Move to previous tab (horizontal tablist)",
+      "ArrowDown": "Move to next tab (vertical tablist)",
+      "ArrowUp": "Move to previous tab (vertical tablist)",
+      "Home": "Move to first tab",
+      "End": "Move to last tab"
+    },
+    "focus_rules": [
+      "Only the active tab is in the tab order (tabindex=0)",
+      "Inactive tabs have tabindex=-1",
+      "Arrow keys move between tabs, Tab moves to the tab panel content"
+    ]
+  },
+  "combobox": {
+    "description": "Combo box / autocomplete input",
+    "expected_keyboard": {
+      "ArrowDown": "Open the listbox and move to next option",
+      "ArrowUp": "Move to previous option",
+      "Enter": "Select the focused option and close",
+      "Escape": "Close the listbox without selecting",
+      "Home": "Move cursor to start of input (when listbox closed)",
+      "End": "Move cursor to end of input (when listbox closed)"
+    },
+    "focus_rules": [
+      "Focus stays on the input element at all times",
+      "aria-activedescendant points to the visually focused option",
+      "aria-expanded reflects whether the listbox is open"
+    ]
+  },
+  "listbox": {
+    "description": "Single or multi-select list",
+    "expected_keyboard": {
+      "ArrowDown": "Move to next option",
+      "ArrowUp": "Move to previous option",
+      "Home": "Move to first option",
+      "End": "Move to last option",
+      "Space": "Toggle selection (multi-select) or select (single-select)"
+    },
+    "focus_rules": [
+      "For single-select: selection follows focus",
+      "For multi-select: Space toggles selection without moving focus",
+      "Type-ahead moves focus to matching option"
+    ]
+  },
+  "tree": {
+    "description": "Tree view (hierarchical list)",
+    "expected_keyboard": {
+      "ArrowDown": "Move to next visible tree item",
+      "ArrowUp": "Move to previous visible tree item",
+      "ArrowRight": "Expand closed node / move to first child of open node",
+      "ArrowLeft": "Collapse open node / move to parent of closed node",
+      "Enter": "Activate the focused tree item",
+      "Home": "Move to first tree item",
+      "End": "Move to last visible tree item"
+    },
+    "focus_rules": [
+      "aria-expanded on parent nodes reflects open/closed state",
+      "Only visible items receive focus"
+    ]
+  },
+  "grid": {
+    "description": "Data grid or interactive table",
+    "expected_keyboard": {
+      "ArrowRight": "Move to next cell in row",
+      "ArrowLeft": "Move to previous cell in row",
+      "ArrowDown": "Move to same cell in next row",
+      "ArrowUp": "Move to same cell in previous row",
+      "Home": "Move to first cell in row",
+      "End": "Move to last cell in row",
+      "PageDown": "Scroll down one page of rows",
+      "PageUp": "Scroll up one page of rows"
+    },
+    "focus_rules": [
+      "Tab moves focus into the grid, then to the next focusable element outside",
+      "Arrow keys navigate between cells",
+      "If a cell contains a single interactive widget, that widget receives focus"
+    ]
+  },
+  "slider": {
+    "description": "Range slider control",
+    "expected_keyboard": {
+      "ArrowRight": "Increase value by one step",
+      "ArrowUp": "Increase value by one step",
+      "ArrowLeft": "Decrease value by one step",
+      "ArrowDown": "Decrease value by one step",
+      "Home": "Set to minimum value",
+      "End": "Set to maximum value",
+      "PageUp": "Increase by large step",
+      "PageDown": "Decrease by large step"
+    },
+    "focus_rules": [
+      "Must have aria-valuenow, aria-valuemin, aria-valuemax",
+      "aria-valuetext provides human-readable value description when needed"
+    ]
+  },
+  "accordion": {
+    "description": "Expandable content sections",
+    "expected_keyboard": {
+      "Enter": "Toggle the focused section open or closed",
+      "Space": "Toggle the focused section open or closed"
+    },
+    "focus_rules": [
+      "Each accordion header should be focusable",
+      "aria-expanded reflects the open/closed state",
+      "The panel content is revealed/hidden when toggled"
+    ]
+  },
+  "carousel": {
+    "description": "Content carousel / slideshow",
+    "expected_keyboard": {
+      "ArrowRight": "Move to next slide",
+      "ArrowLeft": "Move to previous slide",
+      "Tab": "Move focus to controls or content within the current slide"
+    },
+    "focus_rules": [
+      "Autoplay must be pausable via keyboard",
+      "Current slide indicator should be announced",
+      "Rotation stops when any element in the carousel receives focus"
+    ]
+  },
+  "tooltip": {
+    "description": "Informational popup on hover/focus",
+    "expected_keyboard": {
+      "Escape": "Dismiss the tooltip"
+    },
+    "focus_rules": [
+      "Tooltip appears when trigger element receives focus",
+      "Tooltip dismisses on Escape without moving focus",
+      "Tooltip content is accessible via aria-describedby on the trigger"
+    ]
+  },
+  "disclosure": {
+    "description": "Show/hide toggle (details/summary pattern)",
+    "expected_keyboard": {
+      "Enter": "Toggle the disclosure open or closed",
+      "Space": "Toggle the disclosure open or closed"
+    },
+    "focus_rules": [
+      "The trigger button has aria-expanded",
+      "The controlled content is shown/hidden"
+    ]
+  }
+}

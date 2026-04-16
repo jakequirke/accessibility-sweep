@@ -110,3 +110,14 @@ def print_summary(report: Report) -> None:
         f"Scan complete. {total_issues} issues found across {len(report.pages)} pages.",
         border_style="blue",
     ))
+
+    # Disclaimer
+    console.print()
+    console.print(Panel(
+        "[dim]This automated and AI-assisted audit covers approximately 60-70% of "
+        "WCAG 2.2 AA criteria. A manual audit by a qualified accessibility specialist "
+        "is recommended to verify findings and catch issues that require human "
+        "judgement.[/dim]",
+        title="[dim]Disclaimer[/dim]",
+        border_style="dim",
+    ))

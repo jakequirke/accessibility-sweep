@@ -27,7 +27,8 @@ PRESS_KEY = {
                 "type": "string",
                 "description": (
                     "Key to press. Supported: Tab, Shift+Tab, Enter, Escape, "
-                    "Space, ArrowDown, ArrowUp, ArrowLeft, ArrowRight"
+                    "Space, ArrowDown, ArrowUp, ArrowLeft, ArrowRight, "
+                    "Home, End, PageUp, PageDown"
                 ),
             }
         },
@@ -176,6 +177,66 @@ GET_VISIBLE_TEXT = {
     },
 }
 
+GET_HEADINGS = {
+    "name": "get_headings",
+    "description": (
+        "Get an ordered list of all headings on the page with their level, "
+        "text content, and nesting context. Use this to evaluate whether "
+        "the heading hierarchy creates a logical, navigable document outline."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {},
+    },
+}
+
+GET_FORM_FIELDS = {
+    "name": "get_form_fields",
+    "description": (
+        "Get all form inputs on the page with their labels, descriptions, "
+        "required state, error state, autocomplete attribute, type, and "
+        "whether they have a programmatically associated label. Use this "
+        "to evaluate form accessibility comprehensively."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {},
+    },
+}
+
+GET_ERROR_MESSAGES = {
+    "name": "get_error_messages",
+    "description": (
+        "Find all visible error messages on the page — form validation "
+        "errors, alert banners, and inline error text. Returns each error's "
+        "text, the field it relates to (if any), and whether it is "
+        "programmatically associated via aria-describedby or aria-errormessage."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {},
+    },
+}
+
+GET_PAGE_TEXT = {
+    "name": "get_page_text",
+    "description": (
+        "Get the full visible text content in reading order with structural "
+        "markers — headings are prefixed with their level (e.g. [H1], [H2]), "
+        "landmarks are marked with [NAV], [MAIN], [FOOTER], etc. This gives "
+        "a screen-reader-like view of the page content flow."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "max_length": {
+                "type": "integer",
+                "description": "Max characters to return. Default: 10000.",
+            }
+        },
+    },
+}
+
 NAVIGATE_TO = {
     "name": "navigate_to",
     "description": (
@@ -235,12 +296,25 @@ GET_PAGE_URL = {
     },
 }
 
-# Grouped by persona
-KEYBOARD_TOOLS = [PRESS_KEY, GET_FOCUS_STATE, GET_FOCUSABLE_ELEMENTS]
-SCREEN_READER_TOOLS = [GET_ACCESSIBILITY_TREE, GET_LANDMARKS, GET_LIVE_REGIONS, GET_ELEMENT_DETAILS]
-COGNITIVE_TOOLS = [TAKE_SCREENSHOT, GET_PAGE_METRICS, GET_VISIBLE_TEXT]
+# Grouped by persona — each persona gets the tools it needs to evaluate
+# the page from its specific perspective.
+KEYBOARD_TOOLS = [
+    PRESS_KEY, GET_FOCUS_STATE, GET_FOCUSABLE_ELEMENTS,
+    GET_ACCESSIBILITY_TREE, GET_HEADINGS,
+]
+SCREEN_READER_TOOLS = [
+    GET_ACCESSIBILITY_TREE, GET_PAGE_TEXT, GET_ELEMENT_DETAILS,
+    GET_LIVE_REGIONS, GET_HEADINGS, GET_LANDMARKS, GET_FORM_FIELDS,
+    PRESS_KEY,
+]
+COGNITIVE_TOOLS = [
+    TAKE_SCREENSHOT, GET_PAGE_METRICS, GET_PAGE_TEXT,
+    GET_FORM_FIELDS, GET_HEADINGS, GET_ERROR_MESSAGES,
+]
 JOURNEY_TOOLS = [NAVIGATE_TO, CLICK_ELEMENT, GET_LINKS, GET_PAGE_URL]
-ALL_TOOLS = KEYBOARD_TOOLS + SCREEN_READER_TOOLS + COGNITIVE_TOOLS + JOURNEY_TOOLS
+ALL_TOOLS = list({t["name"]: t for t in (
+    KEYBOARD_TOOLS + SCREEN_READER_TOOLS + COGNITIVE_TOOLS + JOURNEY_TOOLS
+)}.values())
 
 
 # ---------------------------------------------------------------------------
@@ -262,16 +336,14 @@ def execute_tool(tool_name: str, tool_input: dict, page: Page) -> str | dict:
 
 def _press_key(page: Page, inp: dict) -> dict:
     key = inp.get("key", "Tab")
-    # Map friendly names to Playwright key names
-    key_map = {
-        "Shift+Tab": "Shift+Tab",
-        "ArrowDown": "ArrowDown",
-        "ArrowUp": "ArrowUp",
-        "ArrowLeft": "ArrowLeft",
-        "ArrowRight": "ArrowRight",
+    valid_keys = {
+        "Tab", "Shift+Tab", "Enter", "Space", "Escape",
+        "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+        "Home", "End", "PageUp", "PageDown",
     }
-    pw_key = key_map.get(key, key)
-    page.keyboard.press(pw_key)
+    if key not in valid_keys:
+        return {"error": f"Invalid key: {key}. Valid keys: {', '.join(sorted(valid_keys))}"}
+    page.keyboard.press(key)
     page.wait_for_timeout(150)  # Brief pause for focus to settle
     return {"pressed": key, "status": "ok"}
 
@@ -304,6 +376,30 @@ def _get_focus_state(page: Page, _inp: dict) -> dict:
         }
         if (!accName) accName = el.textContent ? el.textContent.trim().substring(0, 80) : '';
 
+        // Check if element is obscured by sticky/fixed positioned elements
+        // (WCAG 2.4.11 Focus Not Obscured)
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        let isObscured = false;
+        let obscuredBy = '';
+        if (rect.width > 0 && rect.height > 0) {
+            const topElement = document.elementFromPoint(centerX, centerY);
+            if (topElement && topElement !== el && !el.contains(topElement) && !topElement.contains(el)) {
+                const topStyle = window.getComputedStyle(topElement);
+                const pos = topStyle.position;
+                if (pos === 'fixed' || pos === 'sticky') {
+                    isObscured = true;
+                    obscuredBy = topElement.tagName.toLowerCase()
+                        + (topElement.id ? '#' + topElement.id : '')
+                        + (topElement.className ? '.' + String(topElement.className).split(' ')[0] : '')
+                        + ' (position: ' + pos + ')';
+                }
+            }
+        }
+
+        const inViewport = rect.top >= 0 && rect.top <= window.innerHeight
+            && rect.left >= 0 && rect.left <= window.innerWidth;
+
         return {
             focused: true,
             tag: el.tagName.toLowerCase(),
@@ -327,6 +423,9 @@ def _get_focus_state(page: Page, _inp: dict) -> dict:
                 has_box_shadow: boxShadow !== 'none',
                 box_shadow: boxShadow !== 'none' ? boxShadow.substring(0, 100) : 'none',
             },
+            is_obscured: isObscured,
+            obscured_by: obscuredBy,
+            in_viewport: inViewport,
             bounding_box: {
                 x: Math.round(rect.x),
                 y: Math.round(rect.y),
@@ -505,6 +604,233 @@ def _get_element_details(page: Page, inp: dict) -> dict:
     return result
 
 
+# -- Shared inspection tools --
+
+def _get_headings(page: Page, _inp: dict) -> dict:
+    headings = page.evaluate("""
+    () => {
+        const headings = [...document.querySelectorAll('h1, h2, h3, h4, h5, h6')];
+        let previousLevel = 0;
+        return headings.map((h, index) => {
+            const level = parseInt(h.tagName[1]);
+            const skipped = level > previousLevel + 1 && previousLevel > 0;
+            const result = {
+                index: index,
+                level: level,
+                tag: h.tagName.toLowerCase(),
+                text: h.textContent.trim().substring(0, 120),
+                id: h.id || '',
+                skippedLevel: skipped,
+                previousLevel: previousLevel,
+                inLandmark: h.closest('main, nav, aside, header, footer, [role="main"], [role="navigation"], [role="complementary"], [role="banner"], [role="contentinfo"]')?.tagName?.toLowerCase() || '',
+            };
+            previousLevel = level;
+            return result;
+        });
+    }
+    """)
+    h1_count = sum(1 for h in headings if h["level"] == 1)
+    return {
+        "count": len(headings),
+        "h1_count": h1_count,
+        "headings": headings,
+    }
+
+
+def _get_form_fields(page: Page, _inp: dict) -> dict:
+    fields = page.evaluate("""
+    () => {
+        const inputs = [...document.querySelectorAll('input, select, textarea')];
+        return inputs.filter(el => {
+            const type = (el.getAttribute('type') || 'text').toLowerCase();
+            return type !== 'hidden';
+        }).map(el => {
+            const type = (el.getAttribute('type') || 'text').toLowerCase();
+            const id = el.id || '';
+            const name = el.getAttribute('name') || '';
+
+            // Check for associated label
+            let labelText = '';
+            let hasLabel = false;
+            if (id) {
+                const label = document.querySelector(`label[for="${id}"]`);
+                if (label) { labelText = label.textContent.trim(); hasLabel = true; }
+            }
+            if (!hasLabel) {
+                const parentLabel = el.closest('label');
+                if (parentLabel) { labelText = parentLabel.textContent.trim(); hasLabel = true; }
+            }
+            const ariaLabel = el.getAttribute('aria-label') || '';
+            const ariaLabelledBy = el.getAttribute('aria-labelledby') || '';
+            if (ariaLabel) hasLabel = true;
+            if (ariaLabelledBy) {
+                const ref = document.getElementById(ariaLabelledBy);
+                if (ref) { labelText = ref.textContent.trim(); hasLabel = true; }
+            }
+
+            // Check for description
+            const describedBy = el.getAttribute('aria-describedby') || '';
+            let description = '';
+            if (describedBy) {
+                const desc = document.getElementById(describedBy);
+                if (desc) description = desc.textContent.trim();
+            }
+
+            // Error state
+            const isInvalid = el.getAttribute('aria-invalid') === 'true'
+                || el.classList.contains('error')
+                || el.classList.contains('invalid');
+            const errorMsg = el.getAttribute('aria-errormessage') || '';
+            let errorText = '';
+            if (errorMsg) {
+                const errEl = document.getElementById(errorMsg);
+                if (errEl) errorText = errEl.textContent.trim();
+            }
+
+            return {
+                tag: el.tagName.toLowerCase(),
+                type: type,
+                id: id,
+                name: name,
+                hasLabel: hasLabel,
+                labelText: (ariaLabel || labelText).substring(0, 80),
+                description: description.substring(0, 100),
+                required: el.hasAttribute('required') || el.getAttribute('aria-required') === 'true',
+                disabled: el.disabled || el.getAttribute('aria-disabled') === 'true',
+                autocomplete: el.getAttribute('autocomplete') || '',
+                isInvalid: isInvalid,
+                errorText: errorText.substring(0, 100),
+                placeholder: el.getAttribute('placeholder') || '',
+                value: type === 'password' ? '(hidden)' : (el.value || '').substring(0, 50),
+            };
+        });
+    }
+    """)
+    unlabelled = sum(1 for f in fields if not f["hasLabel"])
+    return {
+        "count": len(fields),
+        "unlabelled_count": unlabelled,
+        "fields": fields,
+    }
+
+
+def _get_error_messages(page: Page, _inp: dict) -> dict:
+    errors = page.evaluate("""
+    () => {
+        const results = [];
+
+        // ARIA error references
+        const invalidFields = document.querySelectorAll('[aria-invalid="true"]');
+        invalidFields.forEach(field => {
+            const errMsgId = field.getAttribute('aria-errormessage');
+            const describedBy = field.getAttribute('aria-describedby');
+            let errorText = '';
+            if (errMsgId) {
+                const el = document.getElementById(errMsgId);
+                if (el) errorText = el.textContent.trim();
+            }
+            if (!errorText && describedBy) {
+                const el = document.getElementById(describedBy);
+                if (el) errorText = el.textContent.trim();
+            }
+            results.push({
+                type: 'field_error',
+                fieldSelector: field.id ? '#' + field.id : field.tagName.toLowerCase() + '[name="' + (field.getAttribute('name') || '') + '"]',
+                fieldLabel: field.getAttribute('aria-label') || '',
+                errorText: errorText.substring(0, 200),
+                programmaticallyAssociated: !!(errMsgId || describedBy),
+            });
+        });
+
+        // Alert roles
+        const alerts = document.querySelectorAll('[role="alert"], .alert, .error-message, .error-summary, .form-error, .field-error, .validation-error');
+        alerts.forEach(el => {
+            const text = el.textContent.trim();
+            if (text && !results.some(r => r.errorText === text)) {
+                results.push({
+                    type: el.getAttribute('role') === 'alert' ? 'alert' : 'error_message',
+                    fieldSelector: '',
+                    fieldLabel: '',
+                    errorText: text.substring(0, 200),
+                    programmaticallyAssociated: el.getAttribute('role') === 'alert',
+                });
+            }
+        });
+
+        return results;
+    }
+    """)
+    return {"count": len(errors), "errors": errors}
+
+
+def _get_page_text(page: Page, inp: dict) -> dict:
+    max_length = inp.get("max_length", 10000)
+    text = page.evaluate("""
+    (maxLen) => {
+        const landmarkMap = {
+            'HEADER': 'BANNER', 'NAV': 'NAV', 'MAIN': 'MAIN',
+            'ASIDE': 'COMPLEMENTARY', 'FOOTER': 'CONTENTINFO',
+            'SECTION': 'REGION', 'FORM': 'FORM',
+        };
+        const roleMap = {
+            'banner': 'BANNER', 'navigation': 'NAV', 'main': 'MAIN',
+            'complementary': 'COMPLEMENTARY', 'contentinfo': 'CONTENTINFO',
+            'search': 'SEARCH', 'form': 'FORM', 'region': 'REGION',
+        };
+
+        function walk(node, depth) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent.trim();
+                return text ? text + ' ' : '';
+            }
+            if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+            const tag = node.tagName;
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden') return '';
+            if (node.getAttribute('aria-hidden') === 'true') return '';
+
+            let result = '';
+
+            // Landmark markers
+            const role = node.getAttribute('role');
+            const landmark = roleMap[role] || landmarkMap[tag] || '';
+            if (landmark) result += '\\n[' + landmark + ']\\n';
+
+            // Heading markers
+            if (/^H[1-6]$/.test(tag)) {
+                result += '\\n[' + tag + '] ' + node.textContent.trim() + '\\n';
+                return result;
+            }
+
+            // List markers
+            if (tag === 'LI') result += '• ';
+            if (tag === 'BR') result += '\\n';
+
+            for (const child of node.childNodes) {
+                result += walk(child, depth + 1);
+            }
+
+            // Block-level elements get line breaks
+            if (['P', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'TABLE', 'TR',
+                 'FIGCAPTION', 'FIGURE', 'DT', 'DD'].includes(tag)) {
+                result += '\\n';
+            }
+
+            if (landmark) result += '[/' + landmark + ']\\n';
+
+            return result;
+        }
+
+        let text = walk(document.body, 0);
+        // Clean up excessive whitespace
+        text = text.replace(/\\n{3,}/g, '\\n\\n').trim();
+        return text.substring(0, maxLen);
+    }
+    """, max_length)
+    return {"text": text, "length": len(text)}
+
+
 # -- Cognitive tools --
 
 def _take_screenshot(page: Page, inp: dict) -> dict:
@@ -515,17 +841,27 @@ def _take_screenshot(page: Page, inp: dict) -> dict:
 
 
 def _get_page_metrics(page: Page, _inp: dict) -> dict:
-    return page.evaluate("""
+    metrics = page.evaluate("""
     () => {
         const body = document.body;
         const text = body.innerText || '';
         const words = text.split(/\\s+/).filter(w => w.length > 0);
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
         const links = document.querySelectorAll('a[href]');
         const inputs = document.querySelectorAll('input, select, textarea');
         const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
         const images = document.querySelectorAll('img');
         const buttons = document.querySelectorAll('button, [role="button"], input[type="submit"]');
         const paragraphs = document.querySelectorAll('p');
+        const videos = document.querySelectorAll('video, iframe[src*="youtube"], iframe[src*="vimeo"]');
+        const animations = document.querySelectorAll(
+            '[class*="animate"], [class*="carousel"], [class*="slider"], [class*="marquee"], [class*="scroll"]'
+        );
+        const autoplay = document.querySelectorAll('video[autoplay], audio[autoplay]');
+        const ctas = document.querySelectorAll(
+            'a.btn, a.button, a[class*="cta"], button:not([type="reset"]):not([type="button"]), '
+            + '[role="button"], input[type="submit"]'
+        );
 
         // Average paragraph length
         let totalParaWords = 0;
@@ -533,6 +869,31 @@ def _get_page_metrics(page: Page, _inp: dict) -> dict:
             totalParaWords += (p.textContent || '').split(/\\s+/).filter(w => w.length > 0).length;
         });
         const avgParaLength = paragraphs.length > 0 ? Math.round(totalParaWords / paragraphs.length) : 0;
+
+        // Abbreviations (2+ uppercase letters)
+        const abbreviations = text.match(/\\b[A-Z]{2,}\\b/g) || [];
+        const uniqueAbbreviations = [...new Set(abbreviations)];
+
+        // Syllable count estimation for Flesch-Kincaid
+        function countSyllables(word) {
+            word = word.toLowerCase().replace(/[^a-z]/g, '');
+            if (word.length <= 3) return 1;
+            word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+            word = word.replace(/^y/, '');
+            const vowelGroups = word.match(/[aeiouy]{1,2}/g);
+            return vowelGroups ? vowelGroups.length : 1;
+        }
+        let totalSyllables = 0;
+        words.forEach(w => { totalSyllables += countSyllables(w); });
+
+        // Flesch-Kincaid Grade Level
+        let fleschKincaidGrade = 0;
+        if (sentences.length > 0 && words.length > 0) {
+            fleschKincaidGrade = Math.round(
+                (0.39 * (words.length / sentences.length) +
+                 11.8 * (totalSyllables / words.length) - 15.59) * 10
+            ) / 10;
+        }
 
         // Unique colours used on text elements
         const colours = new Set();
@@ -546,13 +907,22 @@ def _get_page_metrics(page: Page, _inp: dict) -> dict:
 
         return {
             word_count: words.length,
+            unique_word_count: [...new Set(words.map(w => w.toLowerCase()))].length,
+            sentence_count: sentences.length,
+            average_sentence_length: sentences.length > 0 ? Math.round(words.length / sentences.length) : 0,
+            flesch_kincaid_grade: fleschKincaidGrade,
             link_count: links.length,
             form_field_count: inputs.length,
             button_count: buttons.length,
             heading_count: headings.length,
             image_count: images.length,
+            video_count: videos.length,
             paragraph_count: paragraphs.length,
             avg_paragraph_words: avgParaLength,
+            has_animations: animations.length > 0,
+            has_autoplay: autoplay.length > 0,
+            call_to_action_count: ctas.length,
+            abbreviations_found: uniqueAbbreviations.slice(0, 30),
             unique_text_colours: colours.size,
             unique_bg_colours: bgColours.size,
             page_height_px: document.documentElement.scrollHeight,
@@ -561,6 +931,7 @@ def _get_page_metrics(page: Page, _inp: dict) -> dict:
         };
     }
     """)
+    return metrics
 
 
 def _get_visible_text(page: Page, inp: dict) -> dict:
@@ -633,6 +1004,10 @@ _HANDLERS = {
     "get_landmarks": _get_landmarks,
     "get_live_regions": _get_live_regions,
     "get_element_details": _get_element_details,
+    "get_headings": _get_headings,
+    "get_form_fields": _get_form_fields,
+    "get_error_messages": _get_error_messages,
+    "get_page_text": _get_page_text,
     "take_screenshot": _take_screenshot,
     "get_page_metrics": _get_page_metrics,
     "get_visible_text": _get_visible_text,

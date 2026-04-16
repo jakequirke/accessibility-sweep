@@ -6,7 +6,12 @@
       "Bash(python:*)",
       "Bash(python3:*)",
       "Bash(pip list:*)",
-      "Bash(open /Users/jacobquirke/Desktop/accessibility-sweep/outputs/report.html)"
+      "Bash(open /Users/jacobquirke/Desktop/accessibility-sweep/outputs/report.html)",
+      "Read(//private/tmp/**)",
+      "Bash(awk '{print $11, $12}')",
+      "Bash(curl -s -L \"https://www.make-a-wish.org.uk/sitemap.xml\")",
+      "WebSearch",
+      "WebFetch(domain:www.make-a-wish.org.uk)"
     ]
   }
 }
